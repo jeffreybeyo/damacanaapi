@@ -20,6 +20,13 @@ namespace damacanaAPI.Controllers
         // GET: api/Carts
         public IQueryable<Cart> GetCarts()
         {
+            var carts = from c in db.Carts
+                        select new CartDTO()
+                        {
+                            Id = c.Id,
+
+                        };
+
             return db.Carts;
         }
 
@@ -37,51 +44,74 @@ namespace damacanaAPI.Controllers
         }
 
         // PUT: api/Carts/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutCart(int id, Cart cart)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[ResponseType(typeof(void))]
+        //public async Task<IHttpActionResult> PutCart(int id, Cart cart)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            if (id != cart.Id)
-            {
-                return BadRequest();
-            }
+        //    if (id != cart.Id)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            db.Entry(cart).State = EntityState.Modified;
+        //    db.Entry(cart).State = EntityState.Modified;
 
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CartExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await db.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!CartExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        //    return StatusCode(HttpStatusCode.NoContent);
+        //}
 
         // POST: api/Carts
         [ResponseType(typeof(Cart))]
         public async Task<IHttpActionResult> PostCart(Cart cart)
         {
+            if (cart.Id == null)
+            {
+                cart.Id = 1;
+            }
+
+            cart.CreatedOn = DateTime.Now;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
             db.Carts.Add(cart);
-            await db.SaveChangesAsync();
+
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbUpdateEx)
+            {
+                Console.WriteLine(dbUpdateEx.Message);
+                if (CartExists(cart.Id))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return CreatedAtRoute("DefaultApi", new { id = cart.Id }, cart);
         }

@@ -25,6 +25,8 @@ namespace damacanaAPI.Models
         public System.Data.Entity.DbSet<damacanaAPI.Models.Purchase> Purchases { get; set; }
 
         public System.Data.Entity.DbSet<damacanaAPI.Models.Cart> Carts { get; set; }
+
+        public System.Data.Entity.DbSet<damacanaAPI.Models.CartDTO> CartDTOs { get; set; }
     
     }
 }

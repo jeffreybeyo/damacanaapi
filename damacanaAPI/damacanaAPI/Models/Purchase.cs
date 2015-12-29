@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace damacanaAPI.Models
 {
@@ -12,7 +13,7 @@ namespace damacanaAPI.Models
 
         public decimal TotalPrice { get; set; }
 
-        public List<Product> PurchaseList { get; set; }
+        public virtual ICollection<ProductsPurchases> ProductsPurchases { get; set; }
 
         public DateTime CreatedOn { get; set; }
 

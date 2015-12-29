@@ -37,51 +37,73 @@ namespace damacanaAPI.Controllers
         }
 
         // PUT: api/Purchases/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutPurchase(int id, Purchase purchase)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[ResponseType(typeof(void))]
+        //public async Task<IHttpActionResult> PutPurchase(int id, Purchase purchase)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            if (id != purchase.Id)
-            {
-                return BadRequest();
-            }
+        //    if (id != purchase.Id)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            db.Entry(purchase).State = EntityState.Modified;
+        //    db.Entry(purchase).State = EntityState.Modified;
 
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PurchaseExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await db.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!PurchaseExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        //    return StatusCode(HttpStatusCode.NoContent);
+        //}
 
         // POST: api/Purchases
         [ResponseType(typeof(Purchase))]
-        public async Task<IHttpActionResult> PostPurchase(Purchase purchase)
+        public async Task<IHttpActionResult> PostPurchase(int Id)
         {
+            Cart cartToPurchase = db.Carts.Single(c => c.Id == Id);
+
+            Purchase purchase = new Purchase();
+            purchase.Id = 1;
+            purchase.CreatedOn = DateTime.Now;
+
+            purchase.TotalPrice = cartToPurchase.TotalPrice;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
             db.Purchases.Add(purchase);
-            await db.SaveChangesAsync();
+
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (PurchaseExists(purchase.Id))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             return CreatedAtRoute("DefaultApi", new { id = purchase.Id }, purchase);
         }

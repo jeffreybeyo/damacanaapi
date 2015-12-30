@@ -82,11 +82,6 @@ namespace damacanaAPI.Controllers
         [ResponseType(typeof(Cart))]
         public async Task<IHttpActionResult> PostCart(Cart cart)
         {
-            if (cart.Id == null)
-            {
-                cart.Id = 1;
-            }
-
             cart.CreatedOn = DateTime.Now;
 
             if (!ModelState.IsValid)

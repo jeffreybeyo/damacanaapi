@@ -9,10 +9,16 @@ namespace damacanaAPI.Models
 {
     public class Cart
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
         public int Id { get; set; }
+
         public int UserId { get; set; }
-        public virtual ICollection<ProductsCarts> Productslist { get; set; }
+
+        //public virtual ICollection<ProductsCarts> ProductsCartsCollection { get; set; }
+
         public decimal TotalPrice { get; set; }
+
         public DateTime CreatedOn { get; set; }
     }
 }
